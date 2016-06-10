@@ -6,13 +6,13 @@
 ##      Erika Cowan        ##
 ##      Steven Forsyth     ##
 ##                         ##
-##      updated:04/11/16   ##
+##      updated:06/10/16   ##
 ##                         ##
 #############################
 #############################
 
-#version of autovet that reads and compiles segments from a specific time period, not reading in channels, as well as creating a new hveto_segs.ini file 
 #still needs to be cleaned up according to python style guide
+#Need to add comments 
 
 import argparse
 import glob
