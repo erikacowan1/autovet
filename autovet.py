@@ -127,8 +127,7 @@ for file in files:
 	f = open("total_hveto_segs.txt", "a")
 	for index in range(len(start_time)):
 		f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
-'''
-'''
+
 # define known start and end times
 try: knownsegments =numpy.atleast_2d(numpy.loadtxt(args.directory_path + 'segs.txt', delimiter =','))
 except:
@@ -185,7 +184,7 @@ config.set('tab-SNR-5.5', 'type', 'veto-flag')
 config.set('tab-SNR-5.5', 'shortname', 'SNR 5.5')
 config.set('tab-SNR-5.5', 'flags', 'H1:HVT-'+ args.date +':1')
 config.set('tab-SNR-5.5', 'states', "Science")
-config.set('tab-SNR-5.5', 'segmentfile', '/home/erika.cowan/public_html/vet/autovet_segs')
+config.set('tab-SNR-5.5', 'segmentfile', 'segments_HVT_RND.xml')
 
 with open('hveto_segs.ini','wb') as configfile:
 	config.write(configfile)
