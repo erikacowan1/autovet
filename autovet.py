@@ -3,9 +3,6 @@
 ##                         ##
 ##      autovet.py         ##
 ##                         ##
-##      Erika Cowan        ##
-##      Steven Forsyth     ##
-##                         ##
 ##      updated:06/10/16   ##
 ##                         ##
 #############################
