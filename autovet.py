@@ -12,18 +12,32 @@
 #Need to add comments 
 
 import argparse
+import optparse
 import glob
 import numpy
 from gwpy.segments import DataQualityFlag
 import ConfigParser
 import os,sys
+import subprocess
 
 
+#command line parsing
+parser = argparse.ArgumentParser(description='Argument Parsing')
+parser.add_argument('start_time',type=int,help='Please enter GPS start time')
+parser.add_argument('end_time',type=int,help='Please enter GPS end time')
+parser.add_argument('directory_path',type=str,help='Please enter directory path for triggers and segments')
+parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format') 
+parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format')
+args = parser.parse_args()
+
+'''
 #command line parsing
 parser = argparse.ArgumentParser(description='Argument Parsing')
 parser.add_argument('start_time',type=int,help='Please enter start_time in UTC')
 parser.add_argument('end_time',type=int,help='Please enter end_time in UTC')
 parser.add_argument('directory_path',type=str,help='Please enter directory path for stored txt/xml files')
+parser.add
+
 parser.add_argument('date',type=str, help='Please enter correct date for xml path number')
 parser.add_argument('start_day', type=int, help='Please enter start day in format DD')
 parser.add_argument('end_day', type=int, help='Please enter end day in format DD')
@@ -32,9 +46,7 @@ parser.add_argument('end_month', type=int, help='Please enter end month in forma
 parser.add_argument('start_year', type=int, help='Please enter year in format YYYY')
 parser.add_argument('end_year', type=int, help='Please enter year in format YYYY')
 #parser.add_argument('type_dq_flag', type=int, help='Please enter either hveto, UPV, OVL')
-
-
-args = parser.parse_args()
+'''
 
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
 if args.start_time < 971574400: #roughly the end of S6
