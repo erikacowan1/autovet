@@ -81,6 +81,7 @@ for day in range(args.start_day, args.end_day + 1):
 			for index in range(len(known_start)):
 				f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
+
 # define known start and end times
 try: knownsegments =numpy.atleast_2d(numpy.loadtxt('total_segs.txt'))
 except:
