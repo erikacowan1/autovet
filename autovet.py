@@ -29,7 +29,8 @@ parser.add_argument('start_day', type=int, help='Please enter start day in forma
 parser.add_argument('end_day', type=int, help='Please enter end day in format DD')
 parser.add_argument('start_month', type=int, help='Please enter start month in format MM')
 parser.add_argument('end_month', type=int, help='Please enter end month in format MM')
-parser.add_argument('year', type=int, help='Please enter year in format YYYY')
+parser.add_argument('start_year', type=int, help='Please enter year in format YYYY')
+parser.add_argument('end_year', type=int, help='Please enter year in format YYYY')
 
 args = parser.parse_args()
 
@@ -47,36 +48,38 @@ pattern_segs = pattern = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:0
 
 for day in range(args.start_day, args.end_day + 1):
     for month in range(args.start_month, args.end_month +1):
-        wildcard_hveto = pattern_hveto.format(args.year, month,args.year, month, day)
-        for filename in glob.glob(wildcard_hveto):
-            print filename
+	for year in range(args.start_year, args.end_year +1):
+        	wildcard_hveto = pattern_hveto.format(year, month, year, month, day)
+        	for filename in glob.glob(wildcard_hveto):
+            		print filename
             
-            #for file in filename:
-            data = numpy.loadtxt(filename)
-            print data    
+            	#for file in filename:
+            	data = numpy.loadtxt(filename)
+           	print data    
             
-            #If there is less than 2 lines of data, will get error
-            start_time = [data[i,0] for i in range(len(data))]
-            end_time = [data[i,1] for i in range(len(data))]
+            	#If there is less than 2 lines of data, will get error
+            	start_time = [data[i,0] for i in range(len(data))]
+            	end_time = [data[i,1] for i in range(len(data))]
                 
-            f = open("total_hveto_segs.txt", "a")
-            for index in range(len(start_time)):
-                    f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
+            	f = open("total_hveto_segs.txt", "a")
+            	for index in range(len(start_time)):
+                	f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
 
 
 
 for day in range(args.start_day, args.end_day + 1):
     for month in range(args.start_month, args.end_month +1):	
+	for year in range(args.start_year, args.end_year +1):
 	# define known start and end times
-	wildcard_segs = pattern_segs.format(args.year, month,args.year, month, day)
-	for filename in glob.glob(wildcard_segs):
-		knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))
-		known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-		known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+		wildcard_segs = pattern_segs.format(year, month,year, month, day)
+		for filename in glob.glob(wildcard_segs):
+			knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))
+			known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+			known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 		
-		f = open("total_segs.txt","a")
-		for index in range(len(known_start)):
-			f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+			f = open("total_segs.txt","a")
+			for index in range(len(known_start)):
+				f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
 # define known start and end times
 try: knownsegments =numpy.atleast_2d(numpy.loadtxt('total_segs.txt'))
@@ -106,60 +109,6 @@ flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(kn
 
 # write flag
 flag.write(name)
-'''
-# get all veto-seg-round txt files in the current directory
-files = glob.glob(args.directory_path + '*VETO_SEGS_ROUND*.txt')
-if not files:
-        print 'No veto_segs_round.txt files in %s' % date
-
-for file in files:
-	# read the data
-        data = numpy.loadtxt(file)
-	
-
-        # get an array for the start_time and end_time of each segment
-        start_time = [data[i,0] for i in range(len(data))]
-        end_time = [data[i,1] for i in range(len(data))]
-	#data is not truncated in array.
-	#it is truncated somewhere in printing to file. FIXME!
-
-	#print start and stop times for all round winners to file
-	f = open("total_hveto_segs.txt", "a")
-	for index in range(len(start_time)):
-		f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
-
-# define known start and end times
-try: knownsegments =numpy.atleast_2d(numpy.loadtxt(args.directory_path + 'segs.txt', delimiter =','))
-except:
-        print 'No segs.txt file in %s' % args.date
-known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
-
-#os.system("mkdir %s_xml" % args.date)
-
-#construct flag and filename
-
-flag_name = 'H1:HVT-'+ args.date + ':1' #NEEDS TO BE CHANGED
-name =  'segments_HVT_RND.xml' #NEEDS TO BE CHANGED
-
-# read the data
-data = numpy.loadtxt('total_hveto_segs.txt')
-
-# get an array for the start_time and end_time of each segment
-start_time = [data[i,0] for i in range(len(data))]
-end_time = [data[i,1] for i in range(len(data))]
-
-# create a data quality flag object 
-#zip will truncate the start and end time. is this OK?
-flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(known_start, known_end))
-
-# write flag
-flag.write(name)
-
-#for time in range(args.start_time, arg.start_time, 86400): #not sure about time to increment over, for N>1 days
- '''
-
-#creating the .ini file
 
 config = ConfigParser.RawConfigParser()
 
@@ -189,7 +138,7 @@ config.set('tab-SNR-5.5', 'segmentfile', 'segments_HVT_RND.xml')
 with open('hveto_segs.ini','wb') as configfile:
 	config.write(configfile)
 
-#code that can loop over channels, not necessary for now
+#code that can loop over channels while generating the .ini file, not necessary for now
 '''p = 1
 for i in winning_channels:
     config.add_section("tab-" + i)
