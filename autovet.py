@@ -31,6 +31,8 @@ parser.add_argument('start_month', type=int, help='Please enter start month in f
 parser.add_argument('end_month', type=int, help='Please enter end month in format MM')
 parser.add_argument('start_year', type=int, help='Please enter year in format YYYY')
 parser.add_argument('end_year', type=int, help='Please enter year in format YYYY')
+#parser.add_argument('type_dq_flag', type=int, help='Please enter either hveto, UPV, OVL')
+
 
 args = parser.parse_args()
 
@@ -43,13 +45,43 @@ if args.end_time < args.start_time:
 #Path for location of the hveto triggers. Eventually expand to hveto_directory_path, ovl_dir_path, upv_dir_path    
 print args.directory_path
 
-pattern_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')
-pattern_segs = pattern = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
+pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')
+pattern_segs_hveto = pattern = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
+
+pattern_trigs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'H1:*veto.txt')
+pattern_segs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'segments.txt')
+
+
+for day in range(args.start_time, args.end_time +1):
+	wildcard_UPVh = pattern_trigs_hveto.format(start_time, end_time)
+	for filename in glob.glob(wildcard_UPV):
+		print filename
+
+		data = numpy.loadtext(filename)
+	print data
+
+	start_time = [data[i,0] for i in range(len(data))]
+	end_time = [data[i,1] for i in range(len(data))]
+
+	f = open("total_UPVh_segs.txt", "a")
+	for index in range(len(start_time)):
+		f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
+
+for day in range(args.start_time, args.end_time +1):
+	wildcard_UPVh_segs = pattern_segs_hveto.format(year, month,year, month, day)
+        for filename in glob.glob(wildcard_UPVh_segs):
+        	knownsegments =numpy.atleast_2d(numpy.loadtxt(filename))
+                known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+                f = open("total_UPVh_segs.txt","a")
+                for index in range(len(known_start)):
+                f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
 for day in range(args.start_day, args.end_day + 1):
     for month in range(args.start_month, args.end_month +1):
 	for year in range(args.start_year, args.end_year +1):
-        	wildcard_hveto = pattern_hveto.format(year, month, year, month, day)
+        	wildcard_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
         	for filename in glob.glob(wildcard_hveto):
             		print filename
             
@@ -71,7 +103,7 @@ for day in range(args.start_day, args.end_day + 1):
     for month in range(args.start_month, args.end_month +1):	
 	for year in range(args.start_year, args.end_year +1):
 	# define known start and end times
-		wildcard_segs = pattern_segs.format(year, month,year, month, day)
+		wildcard_segs = pattern_segs_hveto.format(year, month,year, month, day)
 		for filename in glob.glob(wildcard_segs):
 			knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))
 			known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
