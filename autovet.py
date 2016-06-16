@@ -23,12 +23,20 @@ import subprocess
 
 #command line parsing
 parser = argparse.ArgumentParser(description='Argument Parsing')
-parser.add_argument('start_time',type=int,help='Please enter GPS start time')
-parser.add_argument('end_time',type=int,help='Please enter GPS end time')
+parser.add_argument('gps_start_time',type=int,help='Please enter GPS start time')
+parser.add_argument('gps_end_time',type=int,help='Please enter GPS end time')
 parser.add_argument('directory_path',type=str,help='Please enter directory path for triggers and segments')
 parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format') 
 parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format')
 args = parser.parse_args()
+
+#grabbing start/end years, months, and days and storing them in variables
+start_year = int(args.start_date[:4])
+end_year = int(args.end_date[:4])
+start_month = int(args.start_date[4:6])
+end_month = int(args.end_date[4:6])
+start_day = int(args.start_date[6:8])
+end_day = int(args.start_date[6:8])
 
 '''
 #command line parsing
@@ -49,29 +57,29 @@ parser.add_argument('end_year', type=int, help='Please enter year in format YYYY
 '''
 
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
-if args.start_time < 971574400: #roughly the end of S6
-    parser.error("start_time before S6")
-if args.end_time < args.start_time:
-    parser.error("end_time is before start_time")
+if args.gps_start_time < 971574400: #roughly the end of S6
+    parser.error("gps_start_time before S6")
+if args.gps_end_time < args.gps_start_time:
+    parser.error("end_time is before gps_start_time")
 
 #Path for location of the hveto triggers. Eventually expand to hveto_directory_path, ovl_dir_path, upv_dir_path    
 print args.directory_path
 
 pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')
 pattern_segs_hveto = pattern = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
-
+'''
 pattern_trigs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'H1:*veto.txt')
 pattern_segs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'segments.txt')
 
 
-for day in range(args.start_time, args.end_time +1):
+for day in range(args.gps_start_time, args.gps_end_time +1):
 	wildcard_UPVh = pattern_trigs_hveto.format(start_time, end_time)
 	for filename in glob.glob(wildcard_UPV):
 		print filename
 
 		data = numpy.loadtext(filename)
 	print data
-
+	#come up with better in-for loop dummy variables
 	start_time = [data[i,0] for i in range(len(data))]
 	end_time = [data[i,1] for i in range(len(data))]
 
@@ -79,7 +87,7 @@ for day in range(args.start_time, args.end_time +1):
 	for index in range(len(start_time)):
 		f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
 
-for day in range(args.start_time, args.end_time +1):
+for day in range(args.gps_start_time, args.gps_end_time +1):
 	wildcard_UPVh_segs = pattern_segs_hveto.format(year, month,year, month, day)
         for filename in glob.glob(wildcard_UPVh_segs):
         	knownsegments =numpy.atleast_2d(numpy.loadtxt(filename))
@@ -89,7 +97,7 @@ for day in range(args.start_time, args.end_time +1):
                 f = open("total_UPVh_segs.txt","a")
                 for index in range(len(known_start)):
                 f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-
+'''
 for day in range(args.start_day, args.end_day + 1):
     for month in range(args.start_month, args.end_month +1):
 	for year in range(args.start_year, args.end_year +1):
@@ -121,13 +129,13 @@ for day in range(args.start_day, args.end_day + 1):
 			known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
 			known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 		
-			f = open("total_segs.txt","a")
+			f = open("total_hveto_segs.txt","a")
 			for index in range(len(known_start)):
 				f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
 
 # define known start and end times
-try: knownsegments =numpy.atleast_2d(numpy.loadtxt('total_segs.txt'))
+try: knownsegments =numpy.atleast_2d(numpy.loadtxt('total_hveto_segs.txt'))
 except:
         print 'No total_segs.txt file in current working directory. It should have been produced from last loop.' 
 known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
