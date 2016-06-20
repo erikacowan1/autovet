@@ -37,7 +37,7 @@ for day in range(args.gps_start_time, args.gps_end_time + 1, 86400):
         	print filename
 
                 data = numpy.loadtxt(filename)
-                print data
+                #print data
                 #come up with better in-for loop dummy variables
                 start_time = [data[i,0] for i in range(len(data))]
                 end_time = [data[i,1] for i in range(len(data))]
@@ -49,11 +49,17 @@ f = open("total_UPVh_segs.txt","w")
 for day in range(args.gps_start_time, args.gps_end_time +1, 86400):
 	wildcard_UPVh_segs = pattern_segs_UPVh.format(day, day + 86400)
         for filename in glob.glob(wildcard_UPVh_segs):
-        	knownsegments =numpy.atleast_2d(numpy.loadtxt(filename))
-                known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-                known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+		if os.path.isfile(filename):
+			print filename + " exists. Adding to total_UPVh_segs.txt."
+
+       	 		knownsegments = numpy.atleast_2d(numpy.loadtxt(filename))
+                	known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                	known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
                 #f = open("total_UPVh_segs.txt","a")
-                for index in range(len(known_start)):
-                	f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+                	for index in range(len(known_start)):
+                		f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
+		else:
+			print filename + " does not exist. Looking for the segment file in next time increment."
+			break
