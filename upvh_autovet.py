@@ -77,9 +77,8 @@ print known_start, known_end
 flag_name = 'H1:UPVh-RND:1' #NEEDS TO BE CHANGED
 name =  'segments_UPVh_RND.xml' #NEEDS TO BE CHANGED
 
-
-
-knownsegments = numpy.loadtxt('total_UPVh_trigs.txt')
+'''
+knownsegments = numpy.loadtxt('total_UPVh_trigs.txt', dtype=float)
 known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
 known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 # read the data
@@ -88,7 +87,6 @@ data = numpy.loadtxt('total_UPVh_trigs.txt')
 # get an array for the start_time and end_time of each segment
 start_time = [data[i,0] for i in range(len(data))]
 end_time = [data[i,1] for i in range(len(data))]
-'''
 '''
 # create a data quality flag object 
 #zip will truncate the start and end time. is this OK?
