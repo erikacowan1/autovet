@@ -31,15 +31,6 @@ parser.add_argument('-e','--end_date', type=str, help='Please enter end date in 
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
 args = parser.parse_args()
 
-#grabbing start/end years, months, and days and storing them in variables
-#this is used in grabbing the directory structure for hveto files
-start_year = int(args.start_date[:4])
-end_year = int(args.end_date[:4])
-start_month = int(args.start_date[4:6])
-end_month = int(args.end_date[4:6])
-start_day = int(args.start_date[6:8])
-end_day = int(args.start_date[6:8])
-
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
 if args.gps_start_time < 971574400: #roughly the end of S6
     parser.error("gps_start_time before S6")
@@ -53,7 +44,15 @@ if args.gps_end_time < args.gps_start_time:
 #choosing to read in hveto!
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
-	
+
+	#grabbing start/end years, months, and days and storing them in variables
+	start_year = int(args.start_date[:4])
+	end_year = int(args.end_date[:4])
+	start_month = int(args.start_date[4:6])
+	end_month = int(args.end_date[4:6])
+	start_day = int(args.start_date[6:8])
+	end_day = int(args.start_date[6:8])	
+
 	#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
 	f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
 	
@@ -109,13 +108,7 @@ if args.type_dq_flag == 'hveto':
 					#writing the two arrays to total_hveto_segs.txt
 					for index in range(len(known_start)):
 						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-
-
-
-
-
-
-
+	
 
 
 
@@ -123,8 +116,54 @@ if args.type_dq_flag == 'hveto':
 elif args.type_dq_flag == 'UPVh':
 	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
 
+	#TRIGGER HANDLING: begin for loop that loops over the range of dates
+	f = open("total_UPVh_trigs.txt", "w")
+	pattern_trigs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'H1:*veto.txt')
+
+	for day in range(args.gps_start_time, args.gps_end_time + 1, 86400):
+		wildcard_UPVh_trigs = pattern_trigs_UPVh.format(day, day+86400)
+
+		#grabbing segment files
+		for filename in glob.glob(wildcard_UPVh_trigs):
+
+			#loading segments in
+			data = numpy.loadtxt(filename)
+
+			#storing the segments in these two arrays
+			start_time = [data[i,0] for i in range(len(data))]
+			end_time = [data[i,1] for i in range(len(data))]
+
+			#writing the two arrays to total_UPVh_trigs.txt
+			for index in range(len(start_time)):
+				f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
 
 
+	#SEGMENT HANDLING: begin for loop that loops over the range of dates
+	f = open("total_UPVh_segs.txt","w")
+	pattern_segs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'segments.txt')
+
+	for day in range(args.gps_start_time, args.gps_end_time +1, 86400):
+		wildcard_UPVh_segs = pattern_segs_UPVh.format(day, day + 86400)
+
+		#grabbing segment files 
+		for filename in glob.glob(wildcard_UPVh_segs):
+			if os.path.isfile(filename):
+				print filename + " exists. Adding to total_UPVh_segs.txt."
+
+				#loading segments in		
+				knownsegments = numpy.loadtxt(filename)
+
+				#storing the segments in these two arrays
+				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+				known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+				#writing the two arrays to total_UPVh_segs.txt
+				for index in range(len(known_start)):
+					f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+
+			else:
+				print filename + " does not exist. Looking for the segment file in next time increment."
+                        	break
 
 
 #whoops! you forgot to choose hveto, UPVh, or OVL! 
