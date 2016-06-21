@@ -52,7 +52,7 @@ if args.type_dq_flag == 'hveto':
 	start_month = int(args.start_date[4:6])
 	end_month = int(args.end_date[4:6])
 	start_day = int(args.start_date[6:8])
-	end_day = int(args.start_date[6:8])	
+	end_day = int(args.end_date[6:8])	
 
 	#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
 	f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
