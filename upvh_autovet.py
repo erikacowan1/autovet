@@ -64,34 +64,27 @@ for day in range(args.gps_start_time, args.gps_end_time +1, 86400):
 		else:
 			print filename + " does not exist. Looking for the segment file in next time increment."
 			break
-'''
-# define known start and end times
-try: knownsegments =numpy.atleast_2d(numpy.loadtxt('total_UPVh_segs.txt'))
-except:
-        print 'No total_segs.txt file in current working directory. It should have been produced from last loop.'
-known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
-print known_start, known_end
 #construct flag and filename
 flag_name = 'H1:UPVh-RND:1' #NEEDS TO BE CHANGED
 name =  'segments_UPVh_RND.xml' #NEEDS TO BE CHANGED
 
-'''
-knownsegments = numpy.loadtxt('total_UPVh_trigs.txt', dtype=float)
+try: knownsegments = numpy.loadtxt('total_UPVh_trigs.txt', dtype=float)
+except:
+        print 'No total_UPVh_segs.txt file in current working directory. It should have been produced from last loop.'
+
 known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
 known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 # read the data
-data = numpy.loadtxt('total_UPVh_trigs.txt')
+data = numpy.loadtxt('total_UPVh_trigs.txt', dtype=float)
 
 # get an array for the start_time and end_time of each segment
 start_time = [data[i,0] for i in range(len(data))]
 end_time = [data[i,1] for i in range(len(data))]
-'''
+
 # create a data quality flag object 
 #zip will truncate the start and end time. is this OK?
 flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(known_start, known_end))
 
 # write flag
 flag.write(name)
-'''
