@@ -246,4 +246,4 @@ with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 
 print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n(Advance to GO and collect $200.)'
 print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
-print "Now, use the command: gw_summary gps" + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f " + args.directory_path + " -f "+ args.type_dq_flag + "_segs.ini" 
+print "Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f /home/detchar/etc/summary/configurations/defaults.ini -f "+ args.type_dq_flag + "_segs.ini" 
