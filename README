@@ -1,0 +1,12 @@
+The autovet code is located in this directory. 
+
+What is in all of the directories in this folder? 
+
+/hveto_autovet is the run directory I'm currently using for hveto VET runs
+/UPVh_autovet is the run directory I'm currently using for UPVh VET runs
+
+/misc has a bunch of random code that I need to sort through
+
+/development has code that I used to develop and test pieces of autovet.py
+
+-Erika Cowan
