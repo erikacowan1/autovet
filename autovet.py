@@ -38,10 +38,10 @@ if args.gps_end_time < args.gps_start_time:
     parser.error("end_time is before gps_start_time")
 
 ###################################################
-#each option (hveto, UPVh, OVL) in the elif loop will grab the triggers and segments for the associated vetoing program, over any given time period. It will then compile all of the segments into one .txt file, and all of the triggers, into one .txt file. These text files will be used to create the single DQ-flag in .xml format
+#######CREATING TOTAL TRIGGER/SEGMENT FILES########
 ###################################################
 
-#choosing to read in hveto!
+###choosing to read in hveto!###
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
 
@@ -109,10 +109,10 @@ if args.type_dq_flag == 'hveto':
 					for index in range(len(known_start)):
 						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 	
+	f.close()
 
 
-
-#choosing to read in UPVh!
+###choosing to read in UPVh!###
 elif args.type_dq_flag == 'UPVh':
 	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
 
@@ -165,8 +165,8 @@ elif args.type_dq_flag == 'UPVh':
 				print filename + " does not exist. Looking for the segment file in next time increment."
                         	break
 
-
-#whoops! you forgot to choose hveto, UPVh, or OVL! 
+	f.close()
+###whoops! you forgot to choose hveto, UPVh, or OVL!###
 else:
 	print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
 	exit()
@@ -174,27 +174,26 @@ else:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ###################################################
-'''
+###########CREATING DQ FLAG .XML  FILE#############
+###################################################
+
 #construct flag and filename
+flag_name = 'H1:' + args.type_dq_flag + '-RND:1'
+name = 'segments_' + args.type_dq_flag + '_RND.xml'
 
-flag_name = 'H1:HVT-'+ args.date +':1' #NEEDS TO BE CHANGED
-name =  'segments_HVT_RND.xml' #NEEDS TO BE CHANGED
+#reading in segment files
+try: knownsegments = numpy.loadtxt('total_'+ args.type_dq_flag + '_segs.txt')
+except:
+        print 'No total_'+ args.type_dq_flag + '_segs.txt file in current working directory. It should have been produced from last loop. \n If this  file is empty, that may mean you have no active segments during this time period.'
 
-# read the data
-data = numpy.loadtxt('total_hveto_segs.txt')
+#NOTE TO SELF: If there were no active segments, so we still want to produce the DQ Flag? Or should we tell it to quit out? 
+
+known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+# reading in trigger files
+data = numpy.loadtxt('total_'+ args.type_dq_flag + '_trigs.txt')
 
 # get an array for the start_time and end_time of each segment
 start_time = [data[i,0] for i in range(len(data))]
@@ -206,6 +205,11 @@ flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(kn
 
 # write flag
 flag.write(name)
+
+
+###################################################
+##############CREATING VET .INI FILE###############
+###################################################
 
 config = ConfigParser.RawConfigParser()
 
@@ -228,10 +232,9 @@ config.add_section('tab-SNR-5.5')
 config.set('tab-SNR-5.5', 'name','SNR 5.5')
 config.set('tab-SNR-5.5', 'type', 'veto-flag')
 config.set('tab-SNR-5.5', 'shortname', 'SNR 5.5')
-config.set('tab-SNR-5.5', 'flags', 'H1:HVT-'+ args.date +':1')
+config.set('tab-SNR-5.5', 'flags', flag_name )
 config.set('tab-SNR-5.5', 'states', "Science")
-config.set('tab-SNR-5.5', 'segmentfile', 'segments_HVT_RND.xml')
+config.set('tab-SNR-5.5', 'segmentfile', name )
 
-with open('hveto_segs.ini','wb') as configfile:
+with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 	config.write(configfile)
-'''
