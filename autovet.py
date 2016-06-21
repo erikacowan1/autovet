@@ -54,15 +54,13 @@ if args.gps_end_time < args.gps_start_time:
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
 	
-	#open the total_hveto_trigs.txt file, and prepare to write to it!
-	f = open("total_hveto_trigs.txt", "w")
+	#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
+	f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
 	
 	#create pattern paths for the trigger segment files to loop over
 	#NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
 	pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')	
-	pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
 
-	#begin for loop that loops over the range of all days/months/years: necessary because of the hveto data file structure
 	for day in range(start_day, end_day + 1):
 		for month in range(start_month, end_month +1)
 			for year in range(start_year, end_year +1):
@@ -83,6 +81,40 @@ if args.type_dq_flag == 'hveto':
 					#writing the two arrays to total_hveto_trigs.txt
 					for index in range(len(start_time)):
 						f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
+
+
+
+
+	#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
+
+	f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
+	pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
+		
+	for day in range(start_day, end_day + 1):
+		for month in range(start_month, end_month +1):
+			for year in range(start_year, end_year +1):
+			
+			wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
+			
+			#grabbing segment files
+			for filename in glob.glob(wildcard_segs_hveto):
+			
+				#loading segments in
+				knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
+
+				#storing the segments in these two arrays
+				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                                known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+				#writing the two arrays to total_hveto_segs.txt
+				for index in range(len(known_start)):
+					f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+
+
+
+
+
+
 
 
 
