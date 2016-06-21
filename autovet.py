@@ -22,12 +22,13 @@ import subprocess
 from os import path
 
 #command line parsing
-parser = argparse.ArgumentParser(description='Argument Parsing')
+parser = argparse.ArgumentParser(
+	description='autovet.py is a program that grabs triggers and segments for hveto, UPVh, and OVL for any time period, and concatenates them into one segment file, and one trigger file.It then creates a DQ Flag for the given type and time period, spits out a .xml file, and generates the .ini file needed to run VET. For questions or concerns, contact Erika Cowan at erika.cowan@ligo.org')
 parser.add_argument('gps_start_time',type=int,help='Please enter GPS start time')
 parser.add_argument('gps_end_time',type=int,help='Please enter GPS end time')
 parser.add_argument('directory_path',type=str,help='Please enter directory path for triggers and segments')
-parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format') 
-parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format')
+parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format, required for the hveto option') 
+parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
 args = parser.parse_args()
 
