@@ -43,7 +43,7 @@ if args.gps_end_time < args.gps_start_time:
 
 ###choosing to read in hveto!###
 if args.type_dq_flag == 'hveto':
-	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
+	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
 	#grabbing start/end years, months, and days and storing them in variables
 	start_year = int(args.start_date[:4])
@@ -97,24 +97,28 @@ if args.type_dq_flag == 'hveto':
 			
 				#grabbing segment files
 				for filename in glob.glob(wildcard_segs_hveto):
-			
-					#loading segments in
-					knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
+					if os.path.isfile(filename):
+						print filename + " exists. Adding to total_hveto_segs.txt."
 
-					#storing the segments in these two arrays
-					known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-                                	known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+						#loading segments in
+						knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
 
-					#writing the two arrays to total_hveto_segs.txt
-					for index in range(len(known_start)):
-						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-	
+						#storing the segments in these two arrays
+						known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                                		known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+						#writing the two arrays to total_hveto_segs.txt
+						for index in range(len(known_start)):
+							f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+					else:
+						print filename + " does not exist. Looking for the segment file in next time increment."
+						break
 	f.close()
 
 
 ###choosing to read in UPVh!###
 elif args.type_dq_flag == 'UPVh':
-	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Advance to GO and collect $200.)'
+	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
 	#TRIGGER HANDLING: begin for loop that loops over the range of dates
 	f = open("total_UPVh_trigs.txt", "w")
@@ -206,7 +210,7 @@ flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(kn
 # write flag
 flag.write(name)
 
-
+print "Created DQ Flag: " + flag_name + " in .xml form as: " + name 
 ###################################################
 ##############CREATING VET .INI FILE###############
 ###################################################
@@ -238,3 +242,7 @@ config.set('tab-SNR-5.5', 'segmentfile', name )
 
 with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 	config.write(configfile)
+
+print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n(Advance to GO and collect $200.)'
+print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
+print "Now, use the command: gw_summary gps" + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f " + args.directory_path + " -f "+ args.type_dq_flag + "_segs.ini" 
