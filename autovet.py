@@ -62,7 +62,7 @@ if args.type_dq_flag == 'hveto':
 	pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')	
 
 	for day in range(start_day, end_day + 1):
-		for month in range(start_month, end_month +1)
+		for month in range(start_month, end_month +1):
 			for year in range(start_year, end_year +1):
 				
 				wildcard_trigs_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
@@ -94,21 +94,21 @@ if args.type_dq_flag == 'hveto':
 		for month in range(start_month, end_month +1):
 			for year in range(start_year, end_year +1):
 			
-			wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
+				wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
 			
-			#grabbing segment files
-			for filename in glob.glob(wildcard_segs_hveto):
+				#grabbing segment files
+				for filename in glob.glob(wildcard_segs_hveto):
 			
-				#loading segments in
-				knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
+					#loading segments in
+					knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
 
-				#storing the segments in these two arrays
-				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-                                known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+					#storing the segments in these two arrays
+					known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                                	known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
-				#writing the two arrays to total_hveto_segs.txt
-				for index in range(len(known_start)):
-					f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+					#writing the two arrays to total_hveto_segs.txt
+					for index in range(len(known_start)):
+						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
 
 
 
