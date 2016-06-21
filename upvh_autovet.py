@@ -64,15 +64,18 @@ for day in range(args.gps_start_time, args.gps_end_time +1, 86400):
 		else:
 			print filename + " does not exist. Looking for the segment file in next time increment."
 			break
+f.close()
 
 #construct flag and filename
 flag_name = 'H1:UPVh-RND:1' #NEEDS TO BE CHANGED
 name =  'segments_UPVh_RND.xml' #NEEDS TO BE CHANGED
 
-try: knownsegments = numpy.loadtxt('total_UPVh_trigs.txt', dtype=float)
+
+try: knownsegments = numpy.loadtxt('total_UPVh_segs.txt')
 except:
         print 'No total_UPVh_segs.txt file in current working directory. It should have been produced from last loop.'
 
+#knownsegments = numpy.loadtxt(total_UPVh_segs.txt'
 known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
 known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 # read the data
