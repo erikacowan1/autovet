@@ -51,37 +51,31 @@ if args.type_dq_flag == 'hveto':
 		for index in range(len(start_time)):
 			f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
 
-else:
-        print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
 	f.close()        
 
-'''
 	#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
 
 	f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
-	pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1_omicron_BOTH_{}_*-DARM','segs.txt')
-		
-	for day in range(args.gps_start_time, args.gps_end_time + 1, 86400):
-		wildcard_segs_hveto = pattern_segs_hveto.format(day)
-			
-		#grabbing segment files
-		for filename in glob.glob(wildcard_segs_hveto):
-			if os.path.isfile(filename):
-				print filename + " exists. Adding to total_hveto_segs.txt."
+	pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
+	print pattern_segs_hveto	
+	#grabbing segment files
+	for filename in glob.glob(pattern_segs_hveto):
+		if os.path.isfile(filename):
+			print filename + " exists. Adding to total_hveto_segs.txt."
 
-				#loading segments in
-				knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
+			#loading segments in
+			knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
 
-				#storing the segments in these two arrays
-				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-                                known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+			#storing the segments in these two arrays
+			known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                        known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
-				#writing the two arrays to total_hveto_segs.txt
-				for index in range(len(known_start)):
-					f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-				else:
-					print filename + " does not exist. Looking for the segment file in next time increment."
-					break
+			#writing the two arrays to total_hveto_segs.txt
+			for index in range(len(known_start)):
+				f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+			else:
+				print filename + " does not exist. Looking for the segment file in next time increment."
+				break
 	f.close()
 
 ###whoops! you forgot to choose hveto, UPVh, or OVL!###
@@ -89,4 +83,3 @@ else:
 	print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
 	exit()
 
-'''
