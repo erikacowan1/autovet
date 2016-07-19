@@ -18,6 +18,7 @@ parser.add_argument('-s','--start_date', type=str, help='Please enter start date
 parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
 parser.add_argument('hveto_analysis_seg', type=str, help='Please enter offline hveto O1 offline analysis segment, 4,5,6,8,9')
+parser.add_argument('online_offline', type=str, help='Please enter either offline or online. This is for hveto.')
 args = parser.parse_args()
 
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
@@ -27,7 +28,7 @@ if args.gps_end_time < args.gps_start_time:
     parser.error("end_time is before gps_start_time")
 
 ###choosing to read in hveto!###
-if args.type_dq_flag == 'hveto':
+if args.type_dq_flag == 'hveto' && args.online_offline == 'offline' && (args.hveto_analysis_seg == '4' || args.hveto_analysis_seg == '5' || args.hveto_analysis_seg == '6' || args.hveto_analysis_seg == '8' || args.hveto_analysis_seg == '9'):
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
 	#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
