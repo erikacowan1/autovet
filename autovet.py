@@ -30,6 +30,8 @@ parser.add_argument('directory_path',type=str,help='Please enter directory path 
 parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format, required for the hveto option') 
 parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
+parser.add_argument('hveto_analysis_seg', type=str, help='Please enter offline hveto O1 offline analysis segment, 4,5,6,8,9')
+parser.add_argument('online_offline', type=str, help='Please enter either offline or online. This is for hveto.')
 args = parser.parse_args()
 
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
@@ -45,78 +47,139 @@ if args.gps_end_time < args.gps_start_time:
 ###choosing to read in hveto!###
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
+        if args.online_offline == 'offline':
+                analysis_segs_45689 = ['4', '5', '6', '8', '9']
+                if args.hveto_analysis_seg in analysis_segs_45689:
+                        print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
-	#grabbing start/end years, months, and days and storing them in variables
-	start_year = int(args.start_date[:4])
-	end_year = int(args.end_date[:4])
-	start_month = int(args.start_date[4:6])
-	end_month = int(args.end_date[4:6])
-	start_day = int(args.start_date[6:8])
-	end_day = int(args.end_date[6:8])	
+                        #TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
+                        f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
 
-	#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
-	f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
+                        #create pattern paths for the trigger segment files to loop over
+                        #NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
+                        pattern_trigs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
+                        print pattern_trigs_hveto
+                        #grabbing the trigger files
+                        for filename in glob.glob(pattern_trigs_hveto):
+                                #loading the triggers in
+                                data = numpy.atleast_2d(numpy.loadtxt(filename))
+                                print data
+
+                                #creating and filling arrays to store the data
+                                start_time = [data[i,0] for i in range(len(data))]
+                                end_time = [data[i,1] for i in range(len(data))]
+
+                                #writing the two arrays to total_hveto_trigs.txt
+                                for index in range(len(start_time)):
+                                        f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
+
+                        f.close()
+
+                        #SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
+
+                        f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
+                        pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
+                        print pattern_segs_hveto
+                        #grabbing segment files
+                        for filename in glob.glob(pattern_segs_hveto):
+                                if os.path.isfile(filename):
+                                        print filename + " exists. Adding to total_hveto_segs.txt."
+
+                                        #loading segments in
+                                        knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))
+
+                                        #storing the segments in these two arrays
+                                        known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                                        known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+
+                                        #writing the two arrays to total_hveto_segs.txt
+                                        for index in range(len(known_start)):
+                                                f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+                                else:
+                                        print filename + " does not exist. Looking for the segment file in next time increment."
+                                        break
+                        f.close()
+
+                else:
+                        print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
+                        exit()
+
+                
+        if args.online_offline == 'online':
+		#grabbing start/end years, months, and days and storing them in variables
+		start_year = int(args.start_date[:4])
+		end_year = int(args.end_date[:4])
+		start_month = int(args.start_date[4:6])
+		end_month = int(args.end_date[4:6])
+		start_day = int(args.start_date[6:8])
+		end_day = int(args.end_date[6:8])	
+
+		#TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
+		f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
 	
-	#create pattern paths for the trigger segment files to loop over
-	#NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
-	pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')	
+		#create pattern paths for the trigger segment files to loop over
+		#NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
+		pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')	
 
-	for day in range(start_day, end_day + 1):
-		for month in range(start_month, end_month +1):
-			for year in range(start_year, end_year +1):
-				
-				wildcard_trigs_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
-				
-				#grabbing the trigger files
-				for filename in glob.glob(wildcard_trigs_hveto):
+		for day in range(start_day, end_day + 1):
+			for month in range(start_month, end_month +1):
+				for year in range(start_year, end_year +1):
 					
-					#loading the triggers in
-					data = numpy.loadtxt(filename)
+					wildcard_trigs_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
+					
+					#grabbing the trigger files
+					for filename in glob.glob(wildcard_trigs_hveto):
+					
+						#loading the triggers in
+						data = numpy.atleast_2d(numpy.loadtxt(filename))
 
-					#creating and filling arrays to store the data
-					#NOTE TO SELF: if there are <2 lines of data, will get an error. Still need to test.
-					start_time = [data[i,0] for i in range(len(data))]
-					end_time = [data[i,1] for i in range(len(data))]
+						#creating and filling arrays to store the data
+						#NOTE TO SELF: if there are <2 lines of data, will get an error. Still need to test.
+						start_time = [data[i,0] for i in range(len(data))]
+						end_time = [data[i,1] for i in range(len(data))]
 
-					#writing the two arrays to total_hveto_trigs.txt
-					for index in range(len(start_time)):
-						f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
-
-
+						#writing the two arrays to total_hveto_trigs.txt
+						for index in range(len(start_time)):
+							f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
 
 
-	#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
 
-	f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
-	pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
+
+		#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
+
+		f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
+		pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
 		
-	for day in range(start_day, end_day + 1):
-		for month in range(start_month, end_month +1):
-			for year in range(start_year, end_year +1):
+		for day in range(start_day, end_day + 1):
+			for month in range(start_month, end_month +1):
+				for year in range(start_year, end_year +1):
 			
-				wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
+					wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
 			
-				#grabbing segment files
-				for filename in glob.glob(wildcard_segs_hveto):
-					if os.path.isfile(filename):
-						print filename + " exists. Adding to total_hveto_segs.txt."
+					#grabbing segment files
+					for filename in glob.glob(wildcard_segs_hveto):
+						if os.path.isfile(filename):
+							print filename + " exists. Adding to total_hveto_segs.txt."
 
-						#loading segments in
-						knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
+							#loading segments in
+							knownsegments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))		
 
-						#storing the segments in these two arrays
-						known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
-                                		known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
+							#storing the segments in these two arrays
+							known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
+                                			known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
-						#writing the two arrays to total_hveto_segs.txt
-						for index in range(len(known_start)):
-							f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-					else:
-						print filename + " does not exist. Looking for the segment file in next time increment."
-						break
-	f.close()
+							#writing the two arrays to total_hveto_segs.txt
+							for index in range(len(known_start)):
+								f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+						else:
+							print filename + " does not exist. Looking for the segment file in next time increment."
+							break
+		f.close()
 
-
+	else:
+                print 'Did not choose online or offline. Please choose.'
+                exit()
+                
 ###choosing to read in UPVh!###
 elif args.type_dq_flag == 'UPVh':
 	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
