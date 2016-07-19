@@ -35,15 +35,15 @@ if args.type_dq_flag == 'hveto':
 	
 	#create pattern paths for the trigger segment files to loop over
 	#NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
-	pattern_trigs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1_omicron_BOTH_*-DARM','*VETO_SEGS_ROUND*.txt')	
+	pattern_trigs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')	
 	print pattern_trigs_hveto
 	#grabbing the trigger files
 	for filename in glob.glob(pattern_trigs_hveto):
 		#loading the triggers in
-		data = numpy.loadtxt(filename)
+		data = numpy.atleast_2d(numpy.loadtxt(filename))
 		print data
+
 		#creating and filling arrays to store the data
-		#NOTE TO SELF: if there are <2 lines of data, will get an error. Still need to test.
 		start_time = [data[i,0] for i in range(len(data))]
 		end_time = [data[i,1] for i in range(len(data))]
 
@@ -53,7 +53,7 @@ if args.type_dq_flag == 'hveto':
 
 else:
         print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
-        exit()
+	f.close()        
 
 '''
 	#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
