@@ -52,15 +52,17 @@ if args.type_dq_flag == 'hveto':
 
                 if args.hveto_analysis_seg in analysis_segs_45689:
 			pattern_trigs_hveto= os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-			print pattern_trigs_hveto
 		
 		else:
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
-                       	
+                print pattern_trigs_hveto       	
 	else:
                 print 'Did not choose online or offline. Please choose.'
                # exit()
+else:
+        print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
+        exit()
 '''
                         print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
