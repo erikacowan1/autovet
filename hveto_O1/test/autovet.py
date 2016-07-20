@@ -106,52 +106,7 @@ if args.type_dq_flag == 'hveto':
                                 print filename + " does not exist. Looking for the segment file in next time increment."
                                 break
 		f.close()
-	else:
-                print 'Did not choose online or offline. Please choose.'
-               # exit()
-else:
-        print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
-        exit()
-'''
 
-		print pattern_trigs_hveto
-
-                elif args.hveto_analysis_seg == '2':
-                        print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
-
-                        #TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
-                        f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
-
-                        #create pattern paths for the trigger segment files to loop over
-                        #NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
-                        pattern_trigs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-                        print pattern_trigs_hveto
-                        #grabbing the trigger files
-                        for filename in glob.glob(pattern_trigs_hveto):
-                                #loading the triggers in
-                                data = numpy.atleast_2d(numpy.loadtxt(filename))
-                                print data
-
-                                #creating and filling arrays to store the data
-                                start_time = [data[i,0] for i in range(len(data))]
-                                end_time = [data[i,1] for i in range(len(data))]
-
-                                #writing the two arrays to total_hveto_trigs.txt
-                                for index in range(len(start_time)):
-                                        f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
-
-                        f.close()
-
-
-                elif args.hveto_analysis_seg == '3':
-                        print args.hveto_analysis_seg
-
-                elif args.hveto_analysis_seg == '7':
-                        print args.hveto_analysis_seg		
-
-
-
-                
 	elif args.online_offline == 'online':
 		#grabbing start/end years, months, and days and storing them in variables
 		start_year = int(args.start_date[:4])
@@ -357,4 +312,4 @@ with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n(Advance to GO and collect $200.)'
 print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
 print "Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f /home/detchar/etc/summary/configurations/defaults.ini -f "+ args.type_dq_flag + "_segs.ini" 
-'''
+
