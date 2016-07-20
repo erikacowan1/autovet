@@ -50,8 +50,13 @@ if args.type_dq_flag == 'hveto':
         if args.online_offline == 'offline':
                 analysis_segs_45689 = ['4', '5', '6', '8', '9']
                 if args.hveto_analysis_seg in analysis_segs_45689:
-
-
+			pattern_trigs_hveto= os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
+		print pattern_trigs_hveto
+		
+		else:
+                      	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
+                       	exit()
+'''
                         print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
                         #TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
@@ -102,7 +107,7 @@ if args.type_dq_flag == 'hveto':
                                         break
                         f.close()
 		print pattern_trigs_hveto
-'''
+
                 elif args.hveto_analysis_seg == '2':
                         print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
@@ -136,9 +141,7 @@ if args.type_dq_flag == 'hveto':
                 elif args.hveto_analysis_seg == '7':
                         print args.hveto_analysis_seg		
 '''
-		else:
-                      	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
-                       	exit()
+
 
                 
         elif args.online_offline == 'online':
