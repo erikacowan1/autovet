@@ -145,7 +145,7 @@ if args.type_dq_flag == 'hveto':
 
 
                 
-        elif args.online_offline == 'online':
+	elif args.online_offline == 'online':
 		#grabbing start/end years, months, and days and storing them in variables
 		start_year = int(args.start_date[:4])
 		end_year = int(args.end_date[:4])
