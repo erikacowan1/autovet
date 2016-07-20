@@ -48,15 +48,19 @@ if args.gps_end_time < args.gps_start_time:
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
         if args.online_offline == 'offline':
-                analysis_segs_45689 = ['4', '5', '6', '8', '9']
-		analysis_segs_237 = ['2', '3', '7'] 
+                analysis_segs_45689 = ['4', '5', '6', '7', '9']
+		analysis_segs_237 = ['2', '3'] 
                 if args.hveto_analysis_seg in analysis_segs_45689:
 			pattern_trigs_hveto= os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
 			pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
 
 		elif args.hveto_analysis_seg in analysis_segs_237:
 			pattern_trigs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-			pattern_segs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','segs.txt') 	
+			pattern_segs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','segs.txt') 
+			
+		elif args.hveto_analysis_seg == '8':
+			pattern_trigs_hveto = os.path.join(args.directory_path,'*VETO_SEGS_ROUND*.txt')
+			pattern_segs_hveto = os.path.join(args.directory_path,'segs.txt') 
 		else:
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
