@@ -48,15 +48,19 @@ if args.gps_end_time < args.gps_start_time:
 if args.type_dq_flag == 'hveto':
 	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
         if args.online_offline == 'offline':
-                analysis_segs_45689 = ['4', '5', '6', '8', '9']
-		analysis_segs_237 = ['2', '3', '7'] 
+                analysis_segs_45689 = ['4', '5', '6', '7', '9']
+		analysis_segs_237 = ['2', '3'] 
                 if args.hveto_analysis_seg in analysis_segs_45689:
 			pattern_trigs_hveto= os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
 			pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
 
 		elif args.hveto_analysis_seg in analysis_segs_237:
 			pattern_trigs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-			pattern_segs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','segs.txt') 	
+			pattern_segs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','segs.txt') 
+			
+		elif args.hveto_analysis_seg == '8':
+			pattern_trigs_hveto = os.path.join(args.directory_path,'*VETO_SEGS_ROUND*.txt')
+			pattern_segs_hveto = os.path.join(args.directory_path,'segs.txt') 
 		else:
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
@@ -197,7 +201,7 @@ elif args.type_dq_flag == 'UPVh':
 		for filename in glob.glob(wildcard_UPVh_trigs):
 
 			#loading segments in
-			data = numpy.atleast_2d(numpy.loadtxt(filename))
+			data = numpy.loadtxt(filename)
 
 			#storing the segments in these two arrays
 			start_time = [data[i,0] for i in range(len(data))]
@@ -221,7 +225,7 @@ elif args.type_dq_flag == 'UPVh':
 				print filename + " exists. Adding to total_UPVh_segs.txt."
 
 				#loading segments in		
-				knownsegments = numpy.atleast_2d(numpy.loadtxt(filename))
+				knownsegments = numpy.loadtxt(filename)
 
 				#storing the segments in these two arrays
 				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
@@ -298,13 +302,13 @@ config.set('','event-channel','%(ifo)s:GDS-CALIB_STRAIN')
 config.set('','event-generator','Omicron')
 config.set('','metrics',"'Deadtime',\n'Efficiency', \n'Efficiency/Deadtime', \n'Efficiency | SNR>=8', \n'Efficiency/Deadtime | SNR>=8', \n'Efficiency | SNR>=20', \n'Efficiency/Deadtime | SNR>=20', \n'Efficiency | SNR>=100', \n'Efficiency/Deadtime | SNR>=100',\n'Use percentage', \n'Loudest event by SNR'")
 
-config.add_section('tab-SNR-6')
-config.set('tab-SNR-6', 'name','SNR 6')
-config.set('tab-SNR-6', 'type', 'veto-flag')
-config.set('tab-SNR-6', 'shortname', 'SNR 6')
-config.set('tab-SNR-6', 'flags', flag_name )
-config.set('tab-SNR-6', 'states', "Science")
-config.set('tab-SNR-6', 'segmentfile', name )
+config.add_section('tab-SNR-5.5')
+config.set('tab-SNR-5.5', 'name','SNR 5.5')
+config.set('tab-SNR-5.5', 'type', 'veto-flag')
+config.set('tab-SNR-5.5', 'shortname', 'SNR 5.5')
+config.set('tab-SNR-5.5', 'flags', flag_name )
+config.set('tab-SNR-5.5', 'states', "Science")
+config.set('tab-SNR-5.5', 'segmentfile', name )
 
 with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 	config.write(configfile)
