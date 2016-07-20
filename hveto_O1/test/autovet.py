@@ -52,10 +52,11 @@ if args.type_dq_flag == 'hveto':
 		analysis_segs_237 = ['2', '3', '7'] 
                 if args.hveto_analysis_seg in analysis_segs_45689:
 			pattern_trigs_hveto= os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-		
+			pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
+
 		elif args.hveto_analysis_seg in analysis_segs_237:
 			pattern_trigs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-			
+			pattern_segs_hveto = os.path.join(args.directory_path,'H1-omicron_BOTH-*-DARM','segs.txt') 	
 		else:
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
@@ -67,8 +68,6 @@ if args.type_dq_flag == 'hveto':
 
                 #create pattern paths for the trigger segment files to loop over
                 #NOTE TO SELF: create option to specify which trigger files to loop over. default it to '*VETO_SEGS_ROUND*.txt', and then in the --help, specify how to put in your own list of trigger files.
-                pattern_trigs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','*VETO_SEGS_ROUND*.txt')
-                print pattern_trigs_hveto
                 #grabbing the trigger files
                 for filename in glob.glob(pattern_trigs_hveto):
                         #loading the triggers in
@@ -88,8 +87,6 @@ if args.type_dq_flag == 'hveto':
                 #SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
 
                 f = open("total_hveto_segs.txt","w") #file that will hold collection of all segments
-                pattern_segs_hveto = os.path.join(args.directory_path, 'analysis' + args.hveto_analysis_seg , 'H1-omicron_BOTH-*-DARM','segs.txt')
-                print pattern_segs_hveto
                 #grabbing segment files
                 for filename in glob.glob(pattern_segs_hveto):
                         if os.path.isfile(filename):
@@ -108,7 +105,7 @@ if args.type_dq_flag == 'hveto':
                         else:
                                 print filename + " does not exist. Looking for the segment file in next time increment."
                                 break
-                 f.close()
+		f.close()
 	else:
                 print 'Did not choose online or offline. Please choose.'
                # exit()
