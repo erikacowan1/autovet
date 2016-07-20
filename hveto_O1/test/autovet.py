@@ -57,6 +57,10 @@ if args.type_dq_flag == 'hveto':
 		else:
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
+                       	
+	else:
+                print 'Did not choose online or offline. Please choose.'
+               # exit()
 '''
                         print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
 
@@ -141,7 +145,7 @@ if args.type_dq_flag == 'hveto':
 
                 elif args.hveto_analysis_seg == '7':
                         print args.hveto_analysis_seg		
-'''
+
 
 
                 
@@ -350,3 +354,4 @@ with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
 print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n(Advance to GO and collect $200.)'
 print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
 print "Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f /home/detchar/etc/summary/configurations/defaults.ini -f "+ args.type_dq_flag + "_segs.ini" 
+'''
