@@ -30,8 +30,8 @@ parser.add_argument('directory_path',type=str,help='Please enter directory path 
 parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format, required for the hveto option') 
 parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
-parser.add_argument('hveto_analysis_seg', type=str, help='Please enter offline hveto O1 offline analysis segment, 4,5,6,8,9')
-parser.add_argument('online_offline', type=str, help='Please enter either offline or online. This is for hveto.')
+parser.add_argument('-a', '--hveto_analysis_seg', type=str, help='Please enter offline hveto O1 offline analysis segment, 4,5,6,8,9')
+parser.add_argument('-o','--online_offline', type=str, help='Please enter either offline or online. This is for hveto.')
 args = parser.parse_args()
 
 #A check to make sure we're within the time window of aLIGO, and that end_time is after start_time
