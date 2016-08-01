@@ -196,7 +196,10 @@ elif args.type_dq_flag == 'UPVh':
 
 	for day in range(args.gps_start_time, args.gps_end_time + 1, 86400):
 		wildcard_UPVh_trigs = pattern_trigs_UPVh.format(day, day+86400)
-
+		
+		head, tail = os.path.split(os.path.split(wildcard_UPVh_trigs)[0])
+		print tail
+		
 		#grabbing segment files
 		for filename in glob.glob(wildcard_UPVh_trigs):
 
