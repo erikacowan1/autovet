@@ -211,10 +211,17 @@ elif args.type_dq_flag == 'UPVh':
 			start_time = [data[i,0] for i in range(len(data))]
 			end_time = [data[i,1] for i in range(len(data))]
 
-			#writing the two arrays to total_UPVh_trigs.txt
 			for index in range(len(start_time)):
-				f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
-
+    				if start_time[index] > args.gps_start_time and start_time[index] < args.gps_end_time and end_time[index] > args.gps_start_time:
+        				if end_time[index] < args.gps_end_time:
+            					f.write(str(start_time[index]) + " " + str(end_time[index]) + "\n")
+        
+        				elif end_time[index] >= args.gps_end_time:
+            					f.write(str(start_time[index]) + " " + str(stop) + "\n")
+            
+    				else:
+        				print "segments out of start/end time range."
+			
 
 	#SEGMENT HANDLING: begin for loop that loops over the range of dates
 	f = open("total_UPVh_segs.txt","w")
@@ -235,10 +242,16 @@ elif args.type_dq_flag == 'UPVh':
 				known_start = [knownsegments[i,0] for i in range(len(knownsegments))]
 				known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
-				#writing the two arrays to total_UPVh_segs.txt
 				for index in range(len(known_start)):
-					f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
-
+    					if known_start[index] > args.gps_start_time and known_start[index] < args.gps_end_time and known_end[index] > args.gps_start_time:
+        					if known_end[index] < args.gps_end_time:
+            						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+        
+        					elif known_end[index] >= args.gps_end_time:
+            						f.write(str(known_start[index]) + " " + str(stop) + "\n")
+            
+    					else:
+        					print "segments out of start/end time range."
 			else:
 				print filename + " does not exist. Looking for the segment file in next time increment."
                         	break
