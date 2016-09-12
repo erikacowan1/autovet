@@ -12,23 +12,19 @@
 #Need to add comments 
 
 import argparse
-import optparse
 import glob
 import numpy
 from gwpy.segments import DataQualityFlag
 import ConfigParser
-import os,sys
-import subprocess
-from os import path
-
+from gwpy.time import tconvert
 #command line parsing
 parser = argparse.ArgumentParser(
 	description='autovet.py is a program that grabs triggers and segments for hveto, UPVh, and OVL for any time period, and concatenates them into one segment file, and one trigger file.It then creates a DQ Flag for the given type and time period, spits out a .xml file, and generates the .ini file needed to run VET. For questions or concerns, contact Erika Cowan at erika.cowan@ligo.org')
 parser.add_argument('gps_start_time',type=int,help='Please enter GPS start time')
 parser.add_argument('gps_end_time',type=int,help='Please enter GPS end time')
 parser.add_argument('directory_path',type=str,help='Please enter directory path for triggers and segments')
-parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format, required for the hveto option') 
-parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
+#parser.add_argument('-s','--start_date', type=str, help='Please enter start date in YYYYMMDD format, required for the hveto option') 
+#parser.add_argument('-e','--end_date', type=str, help='Please enter end date in YYYYMMDD format, required for the hveto option')
 parser.add_argument('type_dq_flag', type=str, help='Please enter either hveto, UPVh, OVL')
 parser.add_argument('-a', '--hveto_analysis_seg', type=str, help='Please enter offline hveto O1 offline analysis segment, 4,5,6,8,9')
 parser.add_argument('-o','--online_offline', type=str, help='Please enter either offline or online. This is for hveto.')
@@ -40,13 +36,17 @@ if args.gps_start_time < 971574400: #roughly the end of S6
 if args.gps_end_time < args.gps_start_time:
     parser.error("end_time is before gps_start_time")
 
+start_of_day = tconvert(args.gps_start_time)
+start_of_day = start_of_day.replace(hour=0,minute=0,second=0)
+start_of_day = tconvert(start_of_day)
+
 ###################################################
 #######CREATING TOTAL TRIGGER/SEGMENT FILES########
 ###################################################
 
 ###choosing to read in hveto!###
 if args.type_dq_flag == 'hveto':
-	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
+	print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path
         if args.online_offline == 'offline':
                 analysis_segs_45689 = ['4', '5', '6', '7', '9']
 		analysis_segs_237 = ['2', '3'] 
@@ -65,7 +65,7 @@ if args.type_dq_flag == 'hveto':
                       	print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
                        	exit()
                 print pattern_trigs_hveto
-                print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
+                print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path 
 
                 #TRIGGER HANDLING: begin for loop that loops over the range of all days/months/years
                 f = open("total_hveto_trigs.txt", "w") #file that will hold collection of all triggers
@@ -188,7 +188,7 @@ if args.type_dq_flag == 'hveto':
                 
 ###choosing to read in UPVh!###
 elif args.type_dq_flag == 'UPVh':
-	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path + '. (Take a Walk on the Board Walk. Advance Token to Board Walk.'
+	print 'Data Quality Flag chosen is ' + args.type_dq_flag +', stored in the path ' + args.directory_path 
 
 	#TRIGGER HANDLING: begin for loop that loops over the range of dates
 	f = open("total_UPVh_trigs.txt", "w")
@@ -198,8 +198,6 @@ elif args.type_dq_flag == 'UPVh':
 		wildcard_UPVh_trigs = pattern_trigs_UPVh.format(day, day+86400)
 		
 		print day
-		#head, tail = os.path.split(os.path.split(wildcard_UPVh_trigs)[0])
-		#print tail
 		
 		#grabbing segment files
 		for filename in glob.glob(wildcard_UPVh_trigs):
@@ -243,15 +241,8 @@ elif args.type_dq_flag == 'UPVh':
 				known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 
 				for index in range(len(known_start)):
-    					if known_start[index] > args.gps_start_time and known_start[index] < args.gps_end_time and known_end[index] > args.gps_start_time:
-        					if known_end[index] < args.gps_end_time:
-            						f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
+            				f.write(str(known_start[index]) + " " + str(known_end[index]) + "\n")
         
-        					elif known_end[index] >= args.gps_end_time:
-            						f.write(str(known_start[index]) + " " + str(stop) + "\n")
-            
-    					else:
-        					print "segments out of start/end time range."
 			else:
 				print filename + " does not exist. Looking for the segment file in next time increment."
                         	break
@@ -259,7 +250,7 @@ elif args.type_dq_flag == 'UPVh':
 	f.close()
 ###whoops! you forgot to choose hveto, UPVh, or OVL!###
 else:
-	print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line. (Go to jail. Go directly to Jail. Do not pass Go. DO NOT COLLECT $200.'
+	print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line.'
 	exit()
 
 
