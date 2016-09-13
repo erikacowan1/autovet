@@ -18,7 +18,9 @@ from gwpy.segments import DataQualityFlag
 #import ConfigParser
 from gwpy.time import tconvert
 import datetime
-
+import os, sys
+from gwpy.segments import SegmentList
+from gwpy.segments import Segment
 #command line parsing
 parser = argparse.ArgumentParser(
 	description='autovet.py is a program that grabs triggers and segments for hveto, UPVh, and OVL for any time period, and concatenates them into one segment file, and one trigger file.It then creates a DQ Flag for the given type and time period, spits out a .xml file, and generates the .ini file needed to run VET. For questions or concerns, contact Erika Cowan at erika.cowan@ligo.org')
@@ -125,30 +127,31 @@ if args.type_dq_flag == 'hveto':
 
 		start_time_utc = tconvert(args.gps_start_time)
 		end_time_utc = tconvert(args.gps_end_time)
-
+		triggers = SegmentList([])
 		while start_time_utc < end_time_utc:
     			day = start_time_utc.day
     			month = start_time_utc.month
     			year = start_time_utc.year
     
     			wildcard_trigs_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
-    
+   			triggers = SegmentList([])
     			#grabbing the trigger files
     			for filename in glob.glob(wildcard_trigs_hveto):
 	    			#loading the triggers in
 				data = SegmentList.read(filename)
-        			triggers += data
+				print data
+	       			triggers += data
         			start_time_utc += datetime.timedelta(days=1)
         
-    			start_time_utc += datetime.timedelta(days=1)
     
-		triggers.coalesce()
-		start_end_seg = segment(args.gps_start_time, args.gps_end_time)    
-		triggers = triggers & SegmentList([start_end_seg])    
-        
-		triggers.write("total_hveto_trigs.txt")
+			#triggers.coalesce()
+			start_end_seg = Segment(args.gps_start_time, args.gps_end_time)    
+			triggers = triggers & SegmentList([start_end_seg])    
+        		#print triggers
 
+			triggers.write("total_hveto_trigs.txt")
 
+			start_time_utc += datetime.timedelta(days=1)
 
 		#SEGMENT HANDLING: begin for loop that loops over the range of all days/months/years
 
