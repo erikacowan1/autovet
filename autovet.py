@@ -17,6 +17,7 @@ import numpy
 from gwpy.segments import DataQualityFlag
 import ConfigParser
 from gwpy.time import tconvert
+
 #command line parsing
 parser = argparse.ArgumentParser(
 	description='autovet.py is a program that grabs triggers and segments for hveto, UPVh, and OVL for any time period, and concatenates them into one segment file, and one trigger file.It then creates a DQ Flag for the given type and time period, spits out a .xml file, and generates the .ini file needed to run VET. For questions or concerns, contact Erika Cowan at erika.cowan@ligo.org')
@@ -35,7 +36,7 @@ if args.gps_start_time < 971574400: #roughly the end of S6
     parser.error("gps_start_time before S6")
 if args.gps_end_time < args.gps_start_time:
     parser.error("end_time is before gps_start_time")
-
+#finds beginning of day for given gps time
 start_of_day = tconvert(args.gps_start_time)
 start_of_day = start_of_day.replace(hour=0,minute=0,second=0)
 start_of_day = tconvert(start_of_day)
