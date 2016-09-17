@@ -6,6 +6,7 @@ from gwpy.time import tconvert
 import datetime
 import os, sys
 from gwpy.segments import SegmentList,Segment
+import ConfigParser
 
 #command line parsing
 parser = argparse.ArgumentParser(
@@ -34,7 +35,7 @@ def grab_time_segments(glob_wildcard):
     known_start = []
     known_end = []
     start_time_utc = tconvert(args.gps_start_time)
-    for filename in glob.glob(wildcard_segs_hveto):
+    for filename in glob.glob(glob_wildcard):
         if os.path.isfile(filename):
             segments =numpy.atleast_2d(numpy.loadtxt(filename, delimiter =','))
             known_start = [segments[i,0] for i in range(len(segments))]
@@ -47,8 +48,7 @@ def grab_time_segments(glob_wildcard):
 #algorithm that takes segment/trigger list and writes to file
 def write_segs(trig_seg_list,output_file):    
     start_end_seg = Segment(args.gps_start_time, args.gps_end_time)
-    total_triggers = triggers & SegmentList([start_end_seg])
-
+    total_triggers = triggers + SegmentList([start_end_seg])
     total_triggers.coalesce()
     total_triggers.write(output_file)
         
@@ -60,8 +60,8 @@ if args.gps_end_time < args.gps_start_time:
     
 #finds beginning of day for given gps time
 start_of_day = tconvert(args.gps_start_time)
-start_of_day = start_of_day.replace(hour=0,minute=0,second=0)
-start_of_day = tconvert(start_of_day)
+start_of_day_utc = start_of_day.replace(hour=0,minute=0,second=0)
+start_of_day_gps = tconvert(start_of_day)
 
 #finds UTC version of start/end times
 start_time_utc = tconvert(args.gps_start_time)
@@ -146,6 +146,7 @@ if args.type_dq_flag == 'hveto':
             start_time_utc += datetime.timedelta(days=1)
 
         write_segs(triggers,f)
+        
         #segments.write(g) 
 
     else:
@@ -161,27 +162,26 @@ elif args.type_dq_flag == 'UPVh':
     pattern_trigs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'H1:*veto.txt')
     pattern_segs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'segments.txt')
 
-    while start_time_utc < end_time_utc:
-        day = start_time_utc.day
-        nextday = start_time_utc + datetime.timedelta(days=1)
-	day_gps = tconvert(start_time_utc)
-        nextday_gps = tconvert(nextday)
-      
-        wildcard_UPVh_trigs = pattern_trigs_UPVh.format(day_gps, nextday)
-        wildcard_UPVh_segs = pattern_trigs_UPVh.format(day_gps, nextday)
-
+    while start_of_day_utc < end_time_utc:
+        start_of_day_gps = tconvert(start_of_day_utc)
+        nextday_utc = start_of_day_utc + datetime.timedelta(days=1)
+        nextday_gps = tconvert(nextday_utc)
+        print start_of_day_utc, nextday_utc
+	print start_of_day_gps, nextday_gps
+        wildcard_UPVh_trigs = pattern_trigs_UPVh.format(start_of_day_gps, nextday_gps)
+        wildcard_UPVh_segs = pattern_segs_UPVh.format(start_of_day_gps, nextday_gps)
         triggers = grab_time_triggers(wildcard_UPVh_trigs)
-        segments = grab_time_segments(wildcard_UPVh_segs)
-
-        start_time_utc += datetime.timedelta(days=1)
+        segments = grab_time_triggers(wildcard_UPVh_segs)
+        #print triggers
+        start_of_day_utc += datetime.timedelta(days=1)
     write_segs(triggers,f)
-
-
+    write_segs(segments, g)
 ###whoops! you forgot to choose hveto, UPVh, or OVL!###
 else:
         print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line.'
         exit()
-
+f.close()
+g.close()
 ###################################################
 ###########CREATING DQ FLAG .XML  FILE#############
 ###################################################
@@ -204,8 +204,8 @@ known_end = [knownsegments[i,1] for i in range(len(knownsegments))]
 data = numpy.loadtxt('total_'+ args.type_dq_flag + '_trigs.txt')
 
 # get an array for the start_time and end_time of each segment
-start_time = [data[i,0] for i in range(len(data))]
-end_time = [data[i,1] for i in range(len(data))]
+start_time = [data[i,1] for i in range(len(data))]
+end_time = [data[i,2] for i in range(len(data))]
 
 # create a data quality flag object 
 #zip will truncate the start and end time. is this OK?
@@ -247,7 +247,7 @@ config.set('tab-SNR-6', 'segmentfile', name )
 with open(args.type_dq_flag + '_segs.ini','wb') as configfile:
     config.write(configfile)
 
-print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n(Advance to GO and collect $200.)'
+print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n'
 print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
 print "Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) +  " -f /home/detchar/etc/summary/configurations/defaults.ini -f "+ args.type_dq_flag + "_segs.ini" 
 
