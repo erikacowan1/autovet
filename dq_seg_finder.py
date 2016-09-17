@@ -27,7 +27,7 @@ def grab_time_triggers(glob_wildcard):
         data = SegmentList.read(filename)
         print 'grabbing trigger file:' + filename
         time_segs +=data
-	#print time_segs
+    #print time_segs
         start_time_utc += datetime.timedelta(days=1)
     return time_segs
 
@@ -123,19 +123,19 @@ if args.type_dq_flag == 'hveto':
     elif args.online_offline == 'online':
 
         #These paths are currently hardwired for online searches. 
-	pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')
-	pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
-	
-	triggers = SegmentList([])
+    pattern_trigs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM','*VETO_SEGS_ROUND*.txt')
+    pattern_segs_hveto = os.path.join(args.directory_path, '{}{:02}','{}{:02}{:02}', '*86400-DARM', 'segs.txt')
+    
+    triggers = SegmentList([])
         segments = SegmentList([])
 
         while start_time_utc < end_time_utc:
-	    day = start_time_utc.day
-	    month = start_time_utc.month
-	    year = start_time_utc.year
+        day = start_time_utc.day
+        month = start_time_utc.month
+        year = start_time_utc.year
 
             wildcard_trigs_hveto = pattern_trigs_hveto.format(year, month, year, month, day)
-	    wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
+            wildcard_segs_hveto = pattern_segs_hveto.format(year, month,year, month, day)
 
             triggers = grab_time_triggers(wildcard_trigs_hveto)
 
@@ -167,7 +167,7 @@ elif args.type_dq_flag == 'UPVh':
         nextday_utc = start_of_day_utc + datetime.timedelta(days=1)
         nextday_gps = tconvert(nextday_utc)
         print start_of_day_utc, nextday_utc
-	print start_of_day_gps, nextday_gps
+        print start_of_day_gps, nextday_gps
         wildcard_UPVh_trigs = pattern_trigs_UPVh.format(start_of_day_gps, nextday_gps)
         wildcard_UPVh_segs = pattern_segs_UPVh.format(start_of_day_gps, nextday_gps)
         triggers = grab_time_triggers(wildcard_UPVh_trigs)
