@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+# coding=utf-8
+# Copyright (C) Duncan Macleod (2013)
+#
+# This file is part of GWpy VET.
+#
+# GWpy VET is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GWSumm is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GWpy VET.  If not, see <http://www.gnu.org/licenses/>.
+
 import argparse
 import glob
 import numpy
@@ -7,6 +26,10 @@ import datetime
 import os
 from gwpy.segments import SegmentList, Segment
 import ConfigParser
+from gwvet import __version__
+from gwvet import __author__line
+
+__author__ = 'Erika Cowan <erika.cowan@ligo.org>'
 
 
 # command line parsing
@@ -18,6 +41,7 @@ parser = argparse.ArgumentParser(
         spits out a .xml file, and generates the .ini file needed to \
         run VET. For questions or concerns, contact Erika Cowan at \
         erika.cowan@ligo.org')
+parser.add_argument('-V', '--version', action='version', version=__version__)
 parser.add_argument('gps_start_time', type=int, help='Please enter GPS start time')
 parser.add_argument('gps_end_time', type=int, help='Please enter GPS end time')
 parser.add_argument('directory_path', type=str, help='Please enter directory path for triggers and segments')
